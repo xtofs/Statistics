@@ -2,6 +2,7 @@
 
 using Sprache;
 using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
 
 namespace Xof
 {
@@ -70,6 +71,47 @@ namespace Xof
             public double Accept(Var var)
             {
                 return Bindings[var.Name];
+            }
+        }
+
+
+        public static JToken ToJson(this IExpression expression)
+        {
+            return expression.Visit(new Jsonifier());
+        }
+
+        private class Jsonifier : IVisitor<JToken>
+        {
+            private static string Tag = "tag";
+            public JToken Accept(Binary binary)
+            {
+                return new JObject(
+                    new JProperty(Tag, "binary"),
+                    new JProperty("op", binary.Operator),
+                    new JProperty("left", binary.Left.Visit(this)),
+                    new JProperty("right", binary.Right.Visit(this)));
+            }
+
+            public JToken Accept(Literal literal)
+            {
+                return new JObject(
+                    new JProperty(Tag, "literal"),
+                    new JProperty("value", literal.Value));
+            }
+
+            public JToken Accept(Unary unary)
+            {
+                return new JObject(
+                    new JProperty(Tag, "unary"),
+                    new JProperty("op", unary.Operator),
+                    new JProperty("expr", unary.Expression.Visit(this)));
+            }
+
+            public JToken Accept(Var var)
+            {
+                return new JObject(
+                    new JProperty(Tag, "var"),
+                    new JProperty("name", var.Name));
             }
         }
     }

@@ -2,6 +2,8 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
+using Newtonsoft.Json.Linq;
+
 namespace Xof
 {
     [TestClass]
@@ -25,7 +27,22 @@ namespace Xof
 
             var expected = binding["a"] * 2.0;
 
-            Assert.AreEqual(actual, expected);        
+            Assert.AreEqual(actual, expected);
+        }
+
+        [TestMethod]
+        public void TestJsonSerializer()
+        {
+            var expr = Expression.Binary("*", Expression.Literal(2.0), Expression.Var("a"));
+
+            var actual = expr.ToJson();
+
+            var expected = JObject.Parse(@"{'tag':'binary', 'op': '*',
+                'left': {'tag': 'literal', 'value':2.0},
+                'right': {'tag': 'var', 'name':'a'}} ");
+
+            Assert.IsTrue(JToken.DeepEquals(expected, actual));
         }
     }
 }
+
