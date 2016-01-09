@@ -1,7 +1,6 @@
 ﻿using Sprache;
 using System;
 using System.Collections.Generic;
-
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,7 +13,7 @@ namespace Statistics
         }
     }
 }
-
+   
 public static class ExpressionParser
 {
 
@@ -82,11 +81,51 @@ public static class Expression
         public string Accept(Var var) { return var.Name.ToString(); }
     }
 
-    //public static Double Evaluate(this IExpression expression, Dictionary<string, Double> bindings)
-    //{
-    //    return expression.Visit(new Evaluator());
-    //}
+    public static Double Evaluate(this IExpression expression, IDictionary<string, Double> bindings)
+    {
+        return expression.Visit(new Evaluator(bindings));
+    }
 
+    class Evaluator : IVisitor<Double>
+    {
+        public Evaluator(IDictionary<string, Double> bindings)
+        {
+            Bindings = bindings;
+        }
+
+        IDictionary<string, Double> Bindings { get; }
+
+        public double Accept(Binary binary)
+        {
+            switch (binary.Operator)
+            {
+                case "*": return binary.Left.Visit(this) * binary.Right.Visit(this);
+                case "/": return binary.Left.Visit(this) / binary.Right.Visit(this);
+                case "+": return binary.Left.Visit(this) + binary.Right.Visit(this);
+                case "-": return binary.Left.Visit(this) - binary.Right.Visit(this);
+                default: throw new NotSupportedException();
+            }
+        }
+
+        public double Accept(Literal literal)
+        {
+            return literal.Value;
+        }
+
+        public double Accept(Unary unary)
+        {
+            switch (unary.Operator)
+            {
+                case "-": return - unary.Expression.Visit(this);
+                default: throw new NotSupportedException();
+            }
+        }
+
+        public double Accept(Var var)
+        {
+            return Bindings[var.Name];
+        }
+    }
 }
 
 public interface IExpression : IEquatable<IExpression>
