@@ -10,10 +10,31 @@ namespace Xof
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1()
+        public void TestBinaryExpressionParse()
         {
             var actual = Expression.Parse(" 2 * a ");
             var expected = Expression.Binary("*", Expression.Literal(2.0), Expression.Var("a"));
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void TestParenthesisParse()
+        {
+            var actual = Expression.Parse("1 * (2 * a)");
+            var expected = Expression.Binary("*", Expression.Literal(1.0),
+                Expression.Binary("*", Expression.Literal(2.0), Expression.Var("a")));
+
+            Assert.IsTrue(actual.Equals(expected));
+        }
+
+        [TestMethod]
+        public void TestChainParse()
+        {
+            var actual = Expression.Parse("1 * 2 * a");
+            var expected = Expression.Binary("*", 
+                Expression.Binary("*", Expression.Literal(1.0),  Expression.Literal(2.0)),
+                Expression.Var("a"));
 
             Assert.IsTrue(actual.Equals(expected));
         }
