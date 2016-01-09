@@ -6,7 +6,7 @@
     <ProjectGuid>{BE948EDF-66C0-44C7-A676-5AD765DBB40C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Statistics.Tests</RootNamespace>
+    <RootNamespace>Xof</RootNamespace>
     <AssemblyName>Statistics.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
