@@ -7,6 +7,7 @@ namespace Xof
 {
     public static class ExpressionParser
     {
+        private static readonly Lazy<Parser<IExpression>> _instance = new Lazy<Parser<IExpression>>(() => Parse.ChainOperator(Add.Or(Subtract), Term, Expression.Binary));
 
         static readonly Parser<String> Add = Parse.String("+").Text().Token();
         static readonly Parser<String> Subtract = Parse.String("-").Text().Token();
@@ -27,7 +28,7 @@ namespace Xof
 
         static readonly Parser<IExpression> Group = (
                 from lparen in Parse.Char('(')
-                from expr in Parse.Ref(() => Expr)
+                from expr in Parse.Ref(() => Instance)
                 from rparen in Parse.Char(')')
                 select expr
            ).Named("group");
@@ -46,6 +47,12 @@ namespace Xof
 
         static readonly Parser<IExpression> Term = Parse.ChainOperator(Multiply.Or(Divide), InnerTerm, Expression.Binary);
 
-        public static readonly Parser<IExpression> Expr = Parse.ChainOperator(Add.Or(Subtract), Term, Expression.Binary);
+        public static Parser<IExpression> Instance
+        {
+            get
+            {
+                return _instance.Value;
+            }
+        }
     }
 }
