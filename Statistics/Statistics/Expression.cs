@@ -15,103 +15,126 @@ namespace Xof
         public static IExpression Unary(String symbol, IExpression expression) { return new UnaryExpression(symbol, expression); }
         public static IExpression Binary(string arg1, IExpression arg2, IExpression arg3) { return new BinaryExpression(arg1, arg2, arg3); }
 
-        public static String Show(this IExpression expression)
+        public static T Process<T>(this IExpression expression, IExpressionProcessor<T> processor)
         {
-            return expression.Visit(new Stringify());
+            return expression.Visit(new ProcessingVisitor<T>(processor));
         }
 
-        private class Stringify : IVisitor<String>
+        private class ProcessingVisitor<T> : IVisitor<T>
         {
-            public string Accept(BinaryExpression binary) { return string.Format("({0} {1} {2})", binary.Left.Show(), binary.Operator, binary.Right.Show()); }
-            public string Accept(LiteralExpression literal) { return literal.Value.ToString(); }
-            public string Accept(UnaryExpression unary) { return string.Format("({0} {1}", unary.Operator, unary.Expression.Show()); }
-            public string Accept(VariableExpression var) { return var.Name.ToString(); }
+            public IExpressionProcessor<T> Processor { get; }
+
+            public ProcessingVisitor(IExpressionProcessor<T> processor)
+            {
+                Processor = processor;
+            }
+
+            public T Accept(VariableExpression var)
+            {
+                return Processor.Process(var.Name);
+            }
+
+            public T Accept(UnaryExpression unary)
+            {
+                return Processor.Process(unary.Operator, unary.Expression.Visit(this));
+            }
+
+            public T Accept(BinaryExpression binary)
+            {
+                return Processor.Process(binary.Operator, binary.Left.Visit(this), binary.Right.Visit(this));
+            }
+
+            public T Accept(LiteralExpression literal)
+            {
+                return Processor.Process(literal.Value);
+            }
+        }
+
+        public static String Show(this IExpression expression)
+        {
+            return expression.Process(new Stringifier());
+        }
+
+        private class Stringifier : IExpressionProcessor<String>
+        {
+            public string Process(string var) { return string.Format("{0}", var); }
+            public string Process(double value) { return string.Format("{0}", value); }
+            public string Process(string op, string expression) { return string.Format("({0} {1}", op, expression); }
+            public string Process(string op, string left, string right) { return string.Format("({0} {1} {2}", op, left, right); }
         }
 
         public static Double Evaluate(this IExpression expression, IDictionary<string, Double> bindings)
         {
-            return expression.Visit(new Evaluator(bindings));
+            return expression.Process(new Evaluator(bindings));
         }
 
-        class Evaluator : IVisitor<Double>
+        private class Evaluator : IExpressionProcessor<Double>
         {
             public Evaluator(IDictionary<string, Double> bindings)
             {
                 Bindings = bindings;
             }
 
-            IDictionary<string, Double> Bindings { get; }
-      
-            public double Accept(BinaryExpression binary)
-            {
-                switch (binary.Operator)
-                {
-                    case "*": return binary.Left.Visit(this) * binary.Right.Visit(this);
-                    case "/": return binary.Left.Visit(this) / binary.Right.Visit(this);
-                    case "+": return binary.Left.Visit(this) + binary.Right.Visit(this);
-                    case "-": return binary.Left.Visit(this) - binary.Right.Visit(this);
-                    default: throw new NotSupportedException();
-                }
-            }
+            private IDictionary<string, Double> Bindings { get; }
 
-            public double Accept(LiteralExpression literal)
-            {
-                return literal.Value;
-            }
+            public Double Process(string var) { return Bindings[var]; }
+            public Double Process(double value) { return value; }
+            public Double Process(string op, Double expression) { var f = UnaryOps[op]; return f(expression); }
+            public Double Process(string op, Double left, Double right) { var f = BinaryOps[op]; return f(left, right); }
 
-            public double Accept(UnaryExpression unary)
-            {
-                switch (unary.Operator)
-                {
-                    case "-": return -unary.Expression.Visit(this);
-                    default: throw new NotSupportedException();
-                }
-            }
+            private static IDictionary<string, Func<Double, Double>> UnaryOps =
+                new Dictionary<string, Func<Double, Double>> {
+                    { "-", v => - v }
+                };
 
-            public double Accept(VariableExpression var)
+            private static IDictionary<string, Func<Double, Double, Double>> BinaryOps =
+                new Dictionary<string, Func<Double, Double, Double>>
             {
-                return Bindings[var.Name];
-            }
+                { "+", (a, b) => a + b },
+                { "-", (a, b) => a - b },
+                { "*", (a, b) => a * b },
+                { "/", (a, b) => a / b }
+            };
         }
-
 
         public static JToken ToJson(this IExpression expression)
         {
-            return expression.Visit(new Jsonifier());
+            return expression.Process(new Jsonifier());
         }
 
-        private class Jsonifier : IVisitor<JToken>
+        private class Jsonifier : IExpressionProcessor<JToken>
         {
-            private static string Tag = "tag";
-            public JToken Accept(BinaryExpression binary)
-            {
-                return new JObject(
-                    new JProperty(Tag, "binary"),
-                    new JProperty("op", binary.Operator),
-                    new JProperty("left", binary.Left.Visit(this)),
-                    new JProperty("right", binary.Right.Visit(this)));
-            }
+            private static string Tag = "tag";  
 
-            public JToken Accept(LiteralExpression literal)
+            public JToken Process(double value)
             {
                 return new JObject(
                     new JProperty(Tag, "literal"),
-                    new JProperty("value", literal.Value));
+                    new JProperty("value", value));
             }
 
-            public JToken Accept(UnaryExpression unary)
-            {
-                return new JObject(
-                    new JProperty(Tag, "unary"),
-                    new JProperty("op", unary.Operator),
-                    new JProperty("expr", unary.Expression.Visit(this)));
-            }
-
-            public JToken Accept(VariableExpression var)
+            public JToken Process(string name)
             {
                 return new JObject(
                     new JProperty(Tag, "var"),
-                    new JProperty("name", var.Name));
+                    new JProperty("name", name));
+            }
+
+            public JToken Process(string op, JToken expression)
+            {
+                return new JObject(
+                    new JProperty(Tag, "unary"),
+                    new JProperty("op", op),
+                    new JProperty("expr", expression));
+            }
+
+            public JToken Process(string op, JToken left, JToken right)
+            {
+                return new JObject(
+                  new JProperty(Tag, "binary"),
+                  new JProperty("op", op),
+                  new JProperty("left", left),
+                  new JProperty("right", right));
             }
         }
     }
