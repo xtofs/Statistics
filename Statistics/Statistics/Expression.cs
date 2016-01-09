@@ -41,8 +41,8 @@ namespace Xof
             }
 
             IDictionary<string, Double> Bindings { get; }
-
-            public double Accept(Binary binary)
+      
+            public double Accept(BinaryExpression binary)
             {
                 switch (binary.Operator)
                 {
@@ -54,12 +54,12 @@ namespace Xof
                 }
             }
 
-            public double Accept(Literal literal)
+            public double Accept(LiteralExpression literal)
             {
                 return literal.Value;
             }
 
-            public double Accept(Unary unary)
+            public double Accept(UnaryExpression unary)
             {
                 switch (unary.Operator)
                 {
@@ -68,7 +68,7 @@ namespace Xof
                 }
             }
 
-            public double Accept(Var var)
+            public double Accept(VariableExpression var)
             {
                 return Bindings[var.Name];
             }
@@ -83,7 +83,7 @@ namespace Xof
         private class Jsonifier : IVisitor<JToken>
         {
             private static string Tag = "tag";
-            public JToken Accept(Binary binary)
+            public JToken Accept(BinaryExpression binary)
             {
                 return new JObject(
                     new JProperty(Tag, "binary"),
@@ -92,14 +92,14 @@ namespace Xof
                     new JProperty("right", binary.Right.Visit(this)));
             }
 
-            public JToken Accept(Literal literal)
+            public JToken Accept(LiteralExpression literal)
             {
                 return new JObject(
                     new JProperty(Tag, "literal"),
                     new JProperty("value", literal.Value));
             }
 
-            public JToken Accept(Unary unary)
+            public JToken Accept(UnaryExpression unary)
             {
                 return new JObject(
                     new JProperty(Tag, "unary"),
@@ -107,7 +107,7 @@ namespace Xof
                     new JProperty("expr", unary.Expression.Visit(this)));
             }
 
-            public JToken Accept(Var var)
+            public JToken Accept(VariableExpression var)
             {
                 return new JObject(
                     new JProperty(Tag, "var"),
