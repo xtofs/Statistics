@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
-namespace Statistics.Tests
+namespace Xof
 {
     [TestClass]
     public class UnitTest1
@@ -19,9 +19,8 @@ namespace Statistics.Tests
         [TestMethod]
         public void TestMethod2()
         {
-            var binding = new Dictionary<string, Double> { { "a", 2.0 } };
-
             var expr = Expression.Binary("*", Expression.Literal(2.0), Expression.Var("a"));
+            var binding = new Dictionary<string, Double> { { "a", 2.0 } };
             var actual = expr.Evaluate(binding);
 
             var expected = binding["a"] * 2.0;

@@ -7,7 +7,7 @@
     <ProjectGuid>{A7D4B160-4D79-42A7-B729-64803D74968D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Statistics</RootNamespace>
+    <RootNamespace>Xof</RootNamespace>
     <AssemblyName>Statistics</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -48,6 +48,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Binary.cs" />
+    <Compile Include="Unary.cs" />
+    <Compile Include="Literal.cs" />
+    <Compile Include="Var.cs" />
+    <Compile Include="IExpression.cs" />
+    <Compile Include="IVisitor.cs" />
+    <Compile Include="Expression.cs" />
+    <Compile Include="ExpressionParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
