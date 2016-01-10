@@ -7,7 +7,7 @@ namespace Xof
         public BinaryExpression(String symbol, IExpression left, IExpression right) { Operator = symbol; Left = left; Right = right; }
         public String Operator { get; }
         public IExpression Left { get; }
-        public IExpression Right { get; s}
+        public IExpression Right { get; }
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
                                
         public override String ToString() { return this.Show(); }
