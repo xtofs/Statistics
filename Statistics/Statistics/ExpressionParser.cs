@@ -7,7 +7,17 @@ namespace Xof
 {
     public static class ExpressionParser
     {
-        private static readonly Lazy<Parser<IExpression>> _instance = new Lazy<Parser<IExpression>>(() => Parse.ChainOperator(Add.Or(Subtract), Term, Expression.Binary));
+        public static Parser<IExpression> Instance
+        {
+            get
+            {
+                return _instance.Value;
+            }
+        }
+
+        // TODO: move static members to a separate class.
+        // the lazy evaluation is nice, but since these are all static properties they get initialized at startup anyways.
+        private static readonly Lazy<Parser<IExpression>> _instance = new Lazy<Parser<IExpression>>(() => Expr);
 
         static readonly Parser<String> Add = Parse.String("+").Text().Token();
         static readonly Parser<String> Subtract = Parse.String("-").Text().Token();
@@ -47,12 +57,6 @@ namespace Xof
 
         static readonly Parser<IExpression> Term = Parse.ChainOperator(Multiply.Or(Divide), InnerTerm, Expression.Binary);
 
-        public static Parser<IExpression> Instance
-        {
-            get
-            {
-                return _instance.Value;
-            }
-        }
+        static readonly Parser<IExpression> Expr = Parse.ChainOperator(Add.Or(Subtract), Term, Expression.Binary);                                                                                     
     }
 }
