@@ -5,8 +5,11 @@ namespace Xof
     public class UnaryExpression : IExpression
     {
         public UnaryExpression(String symbol, IExpression operand) { Operator = symbol; Operand = operand; }
-        public String Operator { get; private set; }
-        public IExpression Operand { get; private set; }
+
+        public String Operator { get; }
+
+        public IExpression Operand { get; }
+
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
 
         public override String ToString() { return this.Show(); }
