@@ -3,32 +3,33 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 
 using Newtonsoft.Json.Linq;
+using System.ComponentModel;
 
 namespace Xof
 {
     [TestClass]
     public class UnitTest1
     {
-        [TestMethod]
+        [TestMethod, TestCategory("Parsing")]
         public void TestBinaryExpressionParse()
         {
             var actual = Expression.Parse(" 2 * a ");
             var expected = Expression.Binary("*", Expression.Literal(2.0), Expression.Var("a"));
-
-            Assert.IsTrue(actual.Equals(expected));
+            
+            Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Parsing")]
         public void TestParenthesisParse()
         {
             var actual = Expression.Parse("1 * (2 * a)");
             var expected = Expression.Binary("*", Expression.Literal(1.0),
                 Expression.Binary("*", Expression.Literal(2.0), Expression.Var("a")));
 
-            Assert.IsTrue(actual.Equals(expected));
+            Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [TestMethod, TestCategory("Parsing")]
         public void TestChainParse()
         {
             var actual = Expression.Parse("1 * 2 * a");
@@ -36,8 +37,20 @@ namespace Xof
                 Expression.Binary("*", Expression.Literal(1.0),  Expression.Literal(2.0)),
                 Expression.Var("a"));
 
-            Assert.IsTrue(actual.Equals(expected));
+            Assert.AreEqual(expected, actual);
         }
+
+        [TestMethod, TestCategory("Parsing")]
+        public void TestFunctionApplicationParse()
+        {
+            var actual = Expression.Parse("foo(1,2)");
+            var expected = Expression.Call("foo", Expression.Literal(1.0), Expression.Literal(2.0));
+
+            Assert.AreEqual(expected, actual);
+        }
+
+
+
 
         [TestMethod]
         public void TestEvaluateSimpleExpression()
