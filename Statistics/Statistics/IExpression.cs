@@ -2,7 +2,7 @@
 
 namespace Xof
 {
-    public interface IExpression : IEquatable<IExpression>
+    public interface IExpression 
     {
         T Visit<T>(IVisitor<T> visitor);
     }

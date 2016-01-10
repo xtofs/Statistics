@@ -16,14 +16,21 @@ namespace Xof
 
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
 
-        public bool Equals(IExpression other) {
-            var x = other as CallExpression;
-            return x != null && x.Function == this.Function && AllEqual(this.Arguments, x.Arguments); }
+        public override String ToString() { return this.Show(); }
 
-        private static bool AllEqual(IEnumerable<IExpression> arguments1, IEnumerable<IExpression> arguments2)
+        public override bool Equals(object obj)
         {
-            // TODO: this iterates twice over the list. 
-            return arguments1.Count() == arguments2.Count() && arguments1.Zip(arguments2, (a, b) => a.Equals(b)).All(x => x);
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            if (Object.ReferenceEquals(this, obj))
+                return true;
+            var other = (CallExpression)obj;
+            return this.Function.Equals(other.Function) && Enumerable.SequenceEqual(this.Arguments, other.Arguments);
+        }
+
+        public override int GetHashCode()
+        {
+            return Tuple.Create(Function, Arguments).GetHashCode();
         }
     }
 }

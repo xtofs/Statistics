@@ -8,6 +8,19 @@ namespace Xof
         public Double Value { get; }
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
 
-        public bool Equals(IExpression other) { var x = other as LiteralExpression; return x != null && x.Value == this.Value; }
+        public override String ToString() { return this.Show(); }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || this.GetType() != obj.GetType())
+                return false;            
+            var other = (LiteralExpression)obj;
+            return this.Value.Equals(other.Value);
+        }
+
+        public override int GetHashCode()
+        {
+            return Value.GetHashCode();
+        }
     }
 }

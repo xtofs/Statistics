@@ -9,7 +9,22 @@ namespace Xof
         public IExpression Left { get; private set; }
         public IExpression Right { get; private set; }
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
-
-        public bool Equals(IExpression other) { var x = other as BinaryExpression; return x != null && x.Left.Equals(this.Left) && x.Right.Equals(this.Right) && x.Operator.Equals(this.Operator); }
+                               
+        public override String ToString() { return this.Show(); }
+        
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+            if (Object.ReferenceEquals(this, obj))
+                return true;
+            var other = (BinaryExpression)obj;
+            return this.Operator.Equals(other.Operator) && this.Left.Equals(other.Left) && this.Right.Equals(other.Right);
+        }
+                                                      
+        public override int GetHashCode()
+        {
+            return Tuple.Create(Operator, Left, Right).GetHashCode();
+        }
     }
 }
