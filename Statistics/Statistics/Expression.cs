@@ -9,7 +9,6 @@ namespace Xof
 {
     public static class Expression
     {
-        private static string arg1;
 
         public static IExpression Parse(string expression) { return ExpressionParser.Instance.Parse(expression); }
 
@@ -40,7 +39,7 @@ namespace Xof
 
             public T Accept(UnaryExpression unary)
             {
-                return Processor.Process(unary.Operator, unary.Expression.Visit(this));
+                return Processor.Process(unary.Operator, unary.Operand.Visit(this));
             }
 
             public T Accept(BinaryExpression binary)
@@ -69,7 +68,7 @@ namespace Xof
             public string Process(string var) { return string.Format("{0}", var); }
             public string Process(double value) { return string.Format("{0}", value); }
             public string Process(string op, string expression) { return string.Format("({0} {1}", op, expression); }
-            public string Process(string op, string left, string right) { return string.Format("({0} {1} {2}", op, left, right); }
+            public string Process(string op, string left, string right) { return string.Format("({0} {1} {2})", left, op, right); }
             public string Process(string fun, IList<string> args) { return string.Format("{0}({1})", fun, String.Join(", ", args)); }
         }
 
