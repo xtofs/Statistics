@@ -11,15 +11,16 @@ namespace Xof
 
     using E = Expression;      
     using P = ExpressionPattern;
+    using K = ExpressionKind;
 
     [TestClass()]
     public class ExpressionPatternTests
     {
 
         [TestMethod(), TestCategory("Matching")]
-        public void MatchTest1()
+        public void MatchBinaryPatternTest1()
         {
-            var pattern = P.Term("*", P.Var("a", "Literal"), P.Var("b", "Var"));
+            var pattern = P.Term("*", P.Var("a", K.Literal), P.Var("b", K.Var));
 
             var expression = E.Binary("*", E.Literal(2), E.Var("x"));
 
@@ -27,6 +28,37 @@ namespace Xof
 
             Assert.IsTrue(actual["a"].Equals(((BinaryExpression)expression).Left), "left side is equal");
             Assert.IsTrue(actual["b"].Equals(((BinaryExpression)expression).Right), "right side is equal");
+        }
+
+        [TestMethod(), TestCategory("Matching")]
+        public void MatchAnyOperatorTest()
+        {
+            var pattern = P.Term(null, P.Var("a", K.Literal), P.Var("b", K.Var));
+
+            var expression = E.Binary("*", E.Literal(2), E.Var("x"));
+
+            var actual = pattern.Match(expression);
+
+            Assert.IsTrue(actual["a"].Equals(((BinaryExpression)expression).Left), "left side is equal");
+            Assert.IsTrue(actual["b"].Equals(((BinaryExpression)expression).Right), "right side is equal");
+        }
+
+        [TestMethod(), TestCategory("Matching")]
+        public void MatchTestFailedKindTest()
+        {
+            var pattern = P.Term("*", P.Var("a", K.Literal), P.Var("b", K.Literal));
+
+            var expression = E.Binary("*", E.Literal(2), E.Var("x"));
+
+            Exception exception = null;
+            try {
+                var actual = pattern.Match(expression);
+            }
+            catch(NoMatchException ex) {
+                exception = ex;
+            }
+
+            Assert.IsNotNull(exception);
         }
     }
 }

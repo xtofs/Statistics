@@ -9,14 +9,27 @@ namespace Xof
 {
     public static class Expression
     {
-
-        public static IExpression Parse(string expression) { return ExpressionParser.Instance.Parse(expression); }
-
         public static IExpression Var(String name) { return new VariableExpression(name); }
         public static IExpression Literal(Double value) { return new LiteralExpression(value); }
         public static IExpression Unary(String symbol, IExpression expression) { return new UnaryExpression(symbol, expression); }
         public static IExpression Binary(string op, IExpression arg2, IExpression arg3) { return new BinaryExpression(op, arg2, arg3); }
         public static IExpression Call(string fun, params IExpression[] args) { return new CallExpression(fun, args); }
+
+        public static ExpressionKind Kind(this IExpression expression) {
+            return expression.Visit(new KindVisitor());
+        }
+
+        private class KindVisitor : IVisitor<ExpressionKind>
+        {
+            public ExpressionKind Accept(BinaryExpression binary) { return ExpressionKind.Binary; }
+            public ExpressionKind Accept(CallExpression call) { return ExpressionKind.Call; }
+            public ExpressionKind Accept(LiteralExpression literal) { return ExpressionKind.Literal; }
+            public ExpressionKind Accept(UnaryExpression unary) { return ExpressionKind.Unary; }
+            public ExpressionKind Accept(VariableExpression var) { return ExpressionKind.Var; }
+        }
+
+        public static IExpression Parse(string expression) { return ExpressionParser.Instance.Parse(expression); }
+
 
         public static T Process<T>(this IExpression expression, IExpressionProcessor<T> processor)
         {

@@ -18,7 +18,7 @@ namespace Xof
     {
         public static IExpressionPattern Term(String symbol, params IExpressionPattern[] args) { return new TermExpressionPattern(symbol, args); }
 
-        public static IExpressionPattern Var(String name, String kind) { return new VariableExpressionPattern(name, kind); }
+        public static IExpressionPattern Var(String name, ExpressionKind kind) { return new VariableExpressionPattern(name, kind); }
 
         public static IDictionary<String, IExpression> Match(this IExpressionPattern pattern, IExpression expression)
         {
@@ -47,7 +47,7 @@ namespace Xof
         public IDictionary<string, IExpression> Match(IExpression expression, IDictionary<string, IExpression> binding)
         {   
             var binary = expression as BinaryExpression;
-            if (binary != null && Args.Count == 2 && binary.Operator.Equals(Symbol))
+            if (binary != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
             {
                 var a = Args[0].Match(binary.Left, binding);
                 var b = Args[1].Match(binary.Right, a);
@@ -61,14 +61,15 @@ namespace Xof
 
     public class VariableExpressionPattern : IExpressionPattern
     {
-        public VariableExpressionPattern(String name, String kind)
+        public VariableExpressionPattern(String name, ExpressionKind kind)
         {
             Name = name;
             Kind = kind;
         }
 
-        public string Kind { get; }
         public string Name { get; }
+
+        public ExpressionKind Kind { get; }
 
         public IDictionary<string, IExpression> Match(IExpression expression, IDictionary<string, IExpression> binding)
         {
@@ -83,10 +84,14 @@ namespace Xof
                     throw new NoMatchException(String.Format("variable {0} already bound to {1} != {2}", Name, binding[Name], expression));
                 }
             }
-            else
+            else if (expression.Kind().Equals(Kind))
             {
                 binding[Name] = expression;
                 return binding;
+            }
+            else
+            {
+                throw new NoMatchException(String.Format("unmatching pattern variable kind {0} != {1}", expression.Kind(), Kind));
             }
         }
     }
