@@ -1,11 +1,13 @@
-﻿using System;
+﻿using System;                                   
 
 namespace Xof
 {
     public class LiteralExpression : IExpression
     {
         public LiteralExpression(Double value) { Value = value; }
+
         public Double Value { get; }
+
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
 
         public override String ToString() { return this.Show(); }

@@ -5,7 +5,9 @@ namespace Xof
     public class VariableExpression : IExpression
     {
         public VariableExpression(String name) { Name = name; }
+
         public String Name { get; }
+
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
 
         public override String ToString() { return this.Show(); }
