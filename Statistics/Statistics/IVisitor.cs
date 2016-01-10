@@ -6,5 +6,6 @@
         T Accept(UnaryExpression unary);
         T Accept(BinaryExpression binary);
         T Accept(LiteralExpression literal);
+        T Accept(CallExpression call);
     }
 }

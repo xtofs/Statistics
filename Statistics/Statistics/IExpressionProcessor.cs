@@ -12,5 +12,6 @@ namespace Xof
         T Process(string var);
         T Process(string op, T expression);
         T Process(string op, T left, T right);
+        T Process(string fun, IList<T> args);
     }
 }

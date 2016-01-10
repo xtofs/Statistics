@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 
 using Sprache;
 using System.Collections.Generic;
@@ -8,12 +9,15 @@ namespace Xof
 {
     public static class Expression
     {
+        private static string arg1;
+
         public static IExpression Parse(string expression) { return ExpressionParser.Instance.Parse(expression); }
 
         public static IExpression Var(String name) { return new VariableExpression(name); }
         public static IExpression Literal(Double value) { return new LiteralExpression(value); }
         public static IExpression Unary(String symbol, IExpression expression) { return new UnaryExpression(symbol, expression); }
-        public static IExpression Binary(string arg1, IExpression arg2, IExpression arg3) { return new BinaryExpression(arg1, arg2, arg3); }
+        public static IExpression Binary(string op, IExpression arg2, IExpression arg3) { return new BinaryExpression(op, arg2, arg3); }
+        public static IExpression Call(string fun, params IExpression[] args) { return new CallExpression(fun, args); }
 
         public static T Process<T>(this IExpression expression, IExpressionProcessor<T> processor)
         {
@@ -48,6 +52,11 @@ namespace Xof
             {
                 return Processor.Process(literal.Value);
             }
+
+            public T Accept(CallExpression call)
+            {
+                return Processor.Process(call.Function, call.Arguments.Select(a => a.Visit(this)).ToList());
+            }
         }
 
         public static String Show(this IExpression expression)
@@ -61,6 +70,7 @@ namespace Xof
             public string Process(double value) { return string.Format("{0}", value); }
             public string Process(string op, string expression) { return string.Format("({0} {1}", op, expression); }
             public string Process(string op, string left, string right) { return string.Format("({0} {1} {2}", op, left, right); }
+            public string Process(string fun, IList<string> args) { return string.Format("{0}({1})", fun, String.Join(", ", args)); }
         }
 
         public static Double Evaluate(this IExpression expression, IDictionary<string, Double> bindings)
@@ -81,6 +91,21 @@ namespace Xof
             public Double Process(double value) { return value; }
             public Double Process(string op, Double expression) { var f = UnaryOps[op]; return f(expression); }
             public Double Process(string op, Double left, Double right) { var f = BinaryOps[op]; return f(left, right); }
+
+            public double Process(string fun, IList<double> args)
+            {
+                var mangled = String.Format("{0}~{1}", fun, args.Count);
+                switch (mangled)
+                {
+                    case "sin~1":
+                        return Math.Sin(args[0]);
+                    case "cos~1":
+                        return Math.Cos(args[0]);
+                    default:
+                        // TODO: define specific Exception Type
+                        throw new NotImplementedException(String.Format("no such function {0} ( with {1} arguments)", fun, args.Count));
+                }
+            }
 
             private static IDictionary<string, Func<Double, Double>> UnaryOps =
                 new Dictionary<string, Func<Double, Double>> {
@@ -135,6 +160,14 @@ namespace Xof
                   new JProperty("op", op),
                   new JProperty("left", left),
                   new JProperty("right", right));
+            }
+
+            public JToken Process(string fun, IList<JToken> args)
+            {
+                return new JObject(
+                    new JProperty(Tag, "call"),
+                    new JProperty("fun", fun),
+                    new JProperty("args", new JArray(args)));
             }
         }
     }
