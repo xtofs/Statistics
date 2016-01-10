@@ -45,18 +45,87 @@ namespace Xof
         public String Symbol { get; }
 
         public IDictionary<string, IExpression> Match(IExpression expression, IDictionary<string, IExpression> binding)
-        {   
-            var binary = expression as BinaryExpression;
-            if (binary != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
+        {
+            return expression.Visit(new Matcher(this, binding));
+        }
+
+        private class Matcher : IVisitor<IDictionary<string, IExpression>>
+        {
+            private IDictionary<string, IExpression> binding;
+            private TermExpressionPattern pattern;
+
+            public Matcher(TermExpressionPattern termExpressionPattern, IDictionary<string, IExpression> binding)
             {
-                var a = Args[0].Match(binary.Left, binding);
-                var b = Args[1].Match(binary.Right, a);
-                return b;
+                this.pattern = termExpressionPattern;
+                this.binding = binding;
             }
 
-            throw new NotImplementedException("only binary expressions implemented yet.");
-            // throw new NoMatchException();
+            public IDictionary<string, IExpression> Accept(CallExpression call)
+            {
+                if (pattern.Args.Count == call.Arguments.Count &&
+                    (string.IsNullOrWhiteSpace(pattern.Symbol) || pattern.Symbol.Equals(call.Function)))
+                {
+                    var current = binding;
+                    foreach (var pair in pattern.Args.Zip(call.Arguments, Tuple.Create))
+                    {
+                        current = pair.Item1.Match(pair.Item2, current);
+                    }
+                    return current;
+                }
+                throw new NoMatchException(string.Empty);
+            }
+
+            public IDictionary<string, IExpression> Accept(BinaryExpression binary)
+            {
+                if (pattern.Args.Count == 2 && (string.IsNullOrWhiteSpace(pattern.Symbol) || pattern.Symbol.Equals(binary.Operator))  )
+                { 
+                    var a = pattern.Args[0].Match(binary.Left, binding);
+                    var b = pattern.Args[1].Match(binary.Right, a);
+                    return b;
+                }
+                throw new NoMatchException(string.Empty);
+            }
+
+            public IDictionary<string, IExpression> Accept(LiteralExpression literal)
+            {
+                throw new NotImplementedException();
+            }
+
+            public IDictionary<string, IExpression> Accept(UnaryExpression unary)
+            {
+                var a = pattern.Args[0].Match(unary.Operand, binding);
+                return a;
+            }
+
+            public IDictionary<string, IExpression> Accept(VariableExpression var)
+            {
+                throw new NotImplementedException();
+            }
         }
+
+        //    var binary = expression as BinaryExpression;
+        //    if (binary != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
+        //    {
+        //      
+        //    }
+        //    var unary = expression as UnaryExpression;
+        //    if (unary != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
+        //    {
+        //        var a = Args[0].Match(binary.Left, binding);
+        //        var b = Args[1].Match(binary.Right, a);
+        //        return b;
+        //    }
+        //    var call = expression as CallExpression;
+        //    if (call != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
+        //    {
+        //        var a = Args[0].Match(binary.Left, binding);
+        //        var b = Args[1].Match(binary.Right, a);
+        //        return b;
+        //    }
+
+        //    throw new NotImplementedException("only binary expressions implemented yet.");
+        //    // throw new NoMatchException();
+        //}
     }
 
     public class VariableExpressionPattern : IExpressionPattern

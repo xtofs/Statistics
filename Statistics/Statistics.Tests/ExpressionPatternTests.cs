@@ -31,6 +31,18 @@ namespace Xof
         }
 
         [TestMethod(), TestCategory("Matching")]
+        public void MatchCallPatternTest1()
+        {
+            var pattern = P.Term("sin", P.Var("a", K.Literal));
+
+            var expression = E.Call("sin", E.Literal(2));
+
+            var actual = pattern.Match(expression);
+
+            Assert.IsTrue(actual["a"].Equals(((CallExpression)expression).Arguments[0]), "argument is equal");
+        }
+
+        [TestMethod(), TestCategory("Matching")]
         public void MatchAnyOperatorTest()
         {
             var pattern = P.Term(null, P.Var("a", K.Literal), P.Var("b", K.Var));
