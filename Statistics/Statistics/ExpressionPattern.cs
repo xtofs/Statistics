@@ -20,9 +20,23 @@ namespace Xof
 
         public static IExpressionPattern Var(String name, ExpressionKind kind) { return new VariableExpressionPattern(name, kind); }
 
+        public static IExpressionPattern Var(String name) { return new VariableExpressionPattern(name, null); }
+
         public static IDictionary<String, IExpression> Match(this IExpressionPattern pattern, IExpression expression)
         {
             return pattern.Match(expression, new Dictionary<String, IExpression>());
+        }
+
+        public static IDictionary<String, IExpression> TryMatch(this IExpressionPattern pattern, IExpression expression)
+        {
+            try
+            {
+                return pattern.Match(expression, new Dictionary<String, IExpression>());
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 
@@ -77,8 +91,8 @@ namespace Xof
 
             public IDictionary<string, IExpression> Accept(BinaryExpression binary)
             {
-                if (pattern.Args.Count == 2 && (string.IsNullOrWhiteSpace(pattern.Symbol) || pattern.Symbol.Equals(binary.Operator))  )
-                { 
+                if (pattern.Args.Count == 2 && (string.IsNullOrWhiteSpace(pattern.Symbol) || pattern.Symbol.Equals(binary.Operator)))
+                {
                     var a = pattern.Args[0].Match(binary.Left, binding);
                     var b = pattern.Args[1].Match(binary.Right, a);
                     return b;
@@ -102,35 +116,11 @@ namespace Xof
                 throw new NotImplementedException();
             }
         }
-
-        //    var binary = expression as BinaryExpression;
-        //    if (binary != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
-        //    {
-        //      
-        //    }
-        //    var unary = expression as UnaryExpression;
-        //    if (unary != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
-        //    {
-        //        var a = Args[0].Match(binary.Left, binding);
-        //        var b = Args[1].Match(binary.Right, a);
-        //        return b;
-        //    }
-        //    var call = expression as CallExpression;
-        //    if (call != null && Args.Count == 2 && (string.IsNullOrWhiteSpace(Symbol) || Symbol.Equals(binary.Operator)))
-        //    {
-        //        var a = Args[0].Match(binary.Left, binding);
-        //        var b = Args[1].Match(binary.Right, a);
-        //        return b;
-        //    }
-
-        //    throw new NotImplementedException("only binary expressions implemented yet.");
-        //    // throw new NoMatchException();
-        //}
     }
 
     public class VariableExpressionPattern : IExpressionPattern
     {
-        public VariableExpressionPattern(String name, ExpressionKind kind)
+        public VariableExpressionPattern(String name, Nullable<ExpressionKind> kind)
         {
             Name = name;
             Kind = kind;
@@ -138,7 +128,7 @@ namespace Xof
 
         public string Name { get; }
 
-        public ExpressionKind Kind { get; }
+        public Nullable<ExpressionKind> Kind { get; }
 
         public IDictionary<string, IExpression> Match(IExpression expression, IDictionary<string, IExpression> binding)
         {
@@ -153,7 +143,7 @@ namespace Xof
                     throw new NoMatchException(String.Format("variable {0} already bound to {1} != {2}", Name, binding[Name], expression));
                 }
             }
-            else if (expression.Kind().Equals(Kind))
+            else if (Kind == null || Kind.Equals(expression.Kind()))
             {
                 binding[Name] = expression;
                 return binding;
