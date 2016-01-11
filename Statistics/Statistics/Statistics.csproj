@@ -60,6 +60,7 @@
     <Compile Include="CallExpression.cs" />
     <Compile Include="ExpressionKind.cs" />
     <Compile Include="ExpressionPattern.cs" />
+    <Compile Include="ExpressionPrettyPrinter.cs" />
     <Compile Include="IExpressionProcessor.cs" />
     <Compile Include="UnaryExpression.cs" />
     <Compile Include="LiteralExpression.cs" />

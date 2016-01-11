@@ -10,7 +10,7 @@ namespace Xof
 
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
 
-        public override String ToString() { return this.Show(); }
+        public override String ToString() { return string.Format("Literal({0})", Value); }
 
         public override bool Equals(object obj)
         {

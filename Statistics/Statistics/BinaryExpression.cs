@@ -10,7 +10,7 @@ namespace Xof
         public IExpression Right { get; }
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
                                
-        public override String ToString() { return this.Show(); }
+        public override String ToString() { return string.Format("Binary({0} {1} {2})", Operator, Left, Right); }
         
         public override bool Equals(object obj)
         {

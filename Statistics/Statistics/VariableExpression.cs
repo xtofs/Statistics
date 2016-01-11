@@ -9,8 +9,8 @@ namespace Xof
         public String Name { get; }
 
         public T Visit<T>(IVisitor<T> visitor) { return visitor.Accept(this); }
-
-        public override String ToString() { return this.Show(); }
+        
+        public override String ToString() { return string.Format("Var({0})", Name); }
 
         public override bool Equals(object obj)
         {
