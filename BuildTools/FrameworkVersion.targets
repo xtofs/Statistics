@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--starting .NET46 compilation-->
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU.NET46' OR '$(Platform)' == 'x64.NET46' OR '$(Platform)' == 'x86.NET46' ">
+    <DefineConstants>$(DefineConstants);NET30;NET35;NET40;NET45;NET46</DefineConstants>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x64.NET46' ">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86.NET46' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!--ending .NET46 compilation-->
+
+  <!--starting .NET45 compilation-->
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU.NET45' OR '$(Platform)' == 'x64.NET45' OR '$(Platform)' == 'x86.NET45' ">
+    <DefineConstants>$(DefineConstants);NET30;NET35;NET40;NET45</DefineConstants>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x64.NET45' ">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86.NET45' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!--ending .NET45 compilation-->
+
+  <!--starting .NET40 compilation-->
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU.NET40' OR '$(Platform)' == 'x64.NET40' OR '$(Platform)' == 'x86.NET40' ">
+    <DefineConstants>$(DefineConstants);NET30;NET35;NET40</DefineConstants>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x64.NET40' ">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86.NET40' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!--ending .NET40 compilation-->
+
+  <!--starting .NET35 compilation-->
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU.NET35' OR '$(Platform)' == 'x64.NET35' OR '$(Platform)' == 'x86.NET35' ">
+    <DefineConstants>$(DefineConstants);NET30;NET35</DefineConstants>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x64.NET35' ">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86.NET35' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!--ending .NET35 compilation-->
+
+  <!--starting .NET30 compilation-->
+  <PropertyGroup Condition=" '$(Platform)' == 'AnyCPU.NET30' OR '$(Platform)' == 'x64.NET30' OR '$(Platform)' == 'x86.NET30' ">
+    <DefineConstants>$(DefineConstants);NET30</DefineConstants>
+    <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x64.NET30' ">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Platform)' == 'x86.NET30' ">
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!--ending .NET30 compilation-->
+</Project>
+
