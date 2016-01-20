@@ -9,18 +9,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Statistics.Tests", "Statist
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|AnyCPU.NET46 = Debug|AnyCPU.NET46
+		Release|AnyCPU.NET46 = Release|AnyCPU.NET46
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{A7D4B160-4D79-42A7-B729-64803D74968D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A7D4B160-4D79-42A7-B729-64803D74968D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A7D4B160-4D79-42A7-B729-64803D74968D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A7D4B160-4D79-42A7-B729-64803D74968D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A7D4B160-4D79-42A7-B729-64803D74968D}.Debug|AnyCPU.NET46.ActiveCfg = Debug|AnyCPU.NET46
+		{A7D4B160-4D79-42A7-B729-64803D74968D}.Debug|AnyCPU.NET46.Build.0 = Debug|AnyCPU.NET46
+		{A7D4B160-4D79-42A7-B729-64803D74968D}.Release|AnyCPU.NET46.ActiveCfg = Release|AnyCPU.NET46
+		{A7D4B160-4D79-42A7-B729-64803D74968D}.Release|AnyCPU.NET46.Build.0 = Release|AnyCPU.NET46
+		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Debug|AnyCPU.NET46.ActiveCfg = Debug|AnyCPU.NET46
+		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Debug|AnyCPU.NET46.Build.0 = Debug|AnyCPU.NET46
+		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Release|AnyCPU.NET46.ActiveCfg = Release|AnyCPU.NET46
+		{BE948EDF-66C0-44C7-A676-5AD765DBB40C}.Release|AnyCPU.NET46.Build.0 = Release|AnyCPU.NET46
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
